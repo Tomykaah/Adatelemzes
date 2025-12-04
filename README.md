@@ -1,0 +1,1 @@
+Admission for the University class 'Adatelemzés'
