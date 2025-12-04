@@ -18,5 +18,5 @@ mostWinsTeam = teamStatistics.groupby('teamId')['win'].sum().idxmax()
 print('The team: ',teamHistories[teamHistories['teamId'] == mostWinsTeam][['teamCity', 'teamName']], ', max wins: ', teamStatistics.groupby('teamId')['win'].sum().max())
 
 ##### 3. Ki az a játékos, aki a legidősebb volt, amikor utolsó mérkőzését játszotta?
-oldestPlayer = players.loc[players['dateOfBirth'].idxmin()]
-print(oldestPlayer['firstName'], oldestPlayer['lastName'], ' born on: ', oldestPlayer['dateOfBirth']) 
+oldestPlayer = players.groupby('birthdate').idxmax()
+print(oldestPlayer['firstName'], oldestPlayer['lastName '])
