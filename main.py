@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from datetime import datetime as dt
+import ownfunctions as of
 
 games             = pd.read_csv('Games.csv', low_memory = False)
 players           = pd.read_csv('Players.csv', low_memory = False)
@@ -21,15 +22,20 @@ teamHistories     = pd.read_csv('TeamHistories.csv', low_memory = False)
 ##### 3. Ki az a játékos, aki a legidősebb volt, amikor utolsó mérkőzését játszotta?
 longestCareer = 0
 playersWithAge = players.dropna(subset = ['birthdate'])
+playersWithAge = playersWithAge[playersWithAge['birthdate'] != '1900-01-01']
+playerStatistics['gameDateTimeEst'] = playerStatistics['gameDateTimeEst'].apply(of.convert_ts_to_right_format)
 for index, row in playersWithAge.iterrows():
     lastGame = playerStatistics[playerStatistics['personId'] == row['personId']].sort_values(by = ['gameDateTimeEst'], ascending = False)
     if lastGame.empty:
         continue
     lastGame = lastGame.iloc[0]
-    lastGameDate = dt.strptime(lastGame['gameDateTimeEst'], '%Y-%m-%d %H:%M:%S').date()
-    currentCareer = lastGameDate - dt.strptime(row['birthdate'], '%Y-%m-%d').date()
+    lastGameDate = lastGame['gameDateTimeEst']
+    birthDate = dt.strptime(row['birthdate'], '%Y-%m-%d').date()
+    currentCareer = lastGameDate - birthDate    
     if longestCareer < currentCareer.days:
         longestCareer = currentCareer.days
         longestCareerPlayer = row['personId']
-print('A legidősebb játékos az utolsó mérkőzésén, amikor pályára lépett ', players[players['personId'] == longestCareerPlayer]['firstName', 'lastName'], ' volt.')
+longestCareerPlayerFirstName = players[players['personId'] == longestCareerPlayer]['firstName'].values[0]
+longestCareerPlayerLastName = players[players['personId'] == longestCareerPlayer]['lastName'].values[0]
+print('A legidősebb játékos az utolsó mérkőzésén, amikor pályára lépett ', longestCareerPlayerFirstName,' ', longestCareerPlayerLastName, ' volt, összesen ', longestCareer, ' napig.')
     
