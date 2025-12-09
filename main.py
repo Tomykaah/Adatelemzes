@@ -47,9 +47,9 @@ for index, row in playersWithAge.iterrows():
 longestCareerPlayerFirstName = players[players['personId'] == longestCareerPlayer]['firstName'].values[0]
 longestCareerPlayerLastName = players[players['personId'] == longestCareerPlayer]['lastName'].values[0]
 
-print('A legidősebb játékos az utolsó mérkőzésén, amikor pályára lépett ', longestCareerPlayerFirstName,' ', longestCareerPlayerLastName, ' volt, összesen ', longestCareer, ' napig.')
+print('A legidősebb játékos az utolsó mérkőzésén, amikor pályára lépett ', longestCareerPlayerFirstName,' ', longestCareerPlayerLastName, ' volt, összesen ', longestCareer, ' napig tartott karrierje.')
 
-##### 4. Melyik csapatnak volt a legtöbb nemzetiségi (nem USA) játékosa egy szezonban?
+##### 4. Melyik csapatnak volt a legtöbb nemzetiségű játékosa egy szezonban?
 playerStatistics['season'] = playerStatistics['gameDateTimeEst'].apply(of.determine_season)
 
 teamPlayerList = playerStatistics[['firstName', 'lastName', 'personId', 'playerteamCity', 'playerteamName', 'season']].drop_duplicates().sort_values(by = ['season', 'playerteamCity', 'playerteamName'], ascending = True)
@@ -59,4 +59,4 @@ teamPlayerList = teamPlayerList.drop_duplicates(subset = ['playerteamCity', 'pla
 maxNationalities = teamPlayerList.groupby(['playerteamCity', 'playerteamName', 'season'])['country'].count().max()
 
 maxNationalitiesTeam = teamPlayerList.groupby(['playerteamCity', 'playerteamName', 'season'])['country'].count().idxmax()
-print('The team: ', maxNationalitiesTeam, ', number of nationalities: ', maxNationalities)
+print('A csapat: ', maxNationalitiesTeam, ', nemzetiségek száma: ', maxNationalities)
