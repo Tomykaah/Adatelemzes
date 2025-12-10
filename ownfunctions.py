@@ -7,8 +7,12 @@ def convert_ts_to_right_format(ts):
         ts = ts[:-6]
         return dt.strptime(ts, '%Y-%m-%d %H:%M:%S').date()
     
-def determine_season(gameDate: dt)-> str:
-    year = gameDate.year
+def determine_season(gameDate)-> str:
+    try:
+        year = gameDate.year
+    except:
+        gameDate = convert_ts_to_right_format(gameDate)
+        year = gameDate.year
     if gameDate.month >= 10:
         return f"{year}-{year + 1}"
     else:

@@ -1,3 +1,4 @@
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from datetime import datetime as dt
@@ -8,7 +9,7 @@ players           = pd.read_csv('Players.csv', low_memory = False)
 playerStatistics  = pd.read_csv('PlayerStatistics.csv', low_memory = False)
 teamStatistics    = pd.read_csv('TeamStatistics.csv', low_memory = False)
 teamHistories     = pd.read_csv('TeamHistories.csv', low_memory = False)
-
+playerStatistics['season'] = playerStatistics['gameDateTimeEst'].apply(of.determine_season)
 ##### 1. Ki volt az a játékos, aki a legtöbb pontot dobta egy meccsen az NBA történelmében?
 mostPoints = playerStatistics['points'].max()
 mostPointsPlayer = playerStatistics[playerStatistics['points'] == mostPoints]
@@ -50,7 +51,6 @@ longestCareerPlayerLastName = players[players['personId'] == longestCareerPlayer
 print('A legidősebb játékos az utolsó mérkőzésén, amikor pályára lépett ', longestCareerPlayerFirstName,' ', longestCareerPlayerLastName, ' volt, összesen ', longestCareer, ' napig tartott karrierje.')
 
 ##### 4. Melyik csapatnak volt a legtöbb nemzetiségű játékosa egy szezonban?
-playerStatistics['season'] = playerStatistics['gameDateTimeEst'].apply(of.determine_season)
 
 teamPlayerList = playerStatistics[['firstName', 'lastName', 'personId', 'playerteamCity', 'playerteamName', 'season']].drop_duplicates().sort_values(by = ['season', 'playerteamCity', 'playerteamName'], ascending = True)
 teamPlayerList = teamPlayerList.merge(players[['personId', 'country']], on = 'personId', how = 'left').dropna(subset = ['country'])
@@ -60,3 +60,26 @@ maxNationalities = teamPlayerList.groupby(['playerteamCity', 'playerteamName', '
 
 maxNationalitiesTeam = teamPlayerList.groupby(['playerteamCity', 'playerteamName', 'season'])['country'].count().idxmax()
 print('A csapat: ', maxNationalitiesTeam, ', nemzetiségek száma: ', maxNationalities)
+
+##### 5. Hogyan változott évről évre a legtöbbet átlagoló játékosok(pl. top25) pontszámainak átlaga?
+topN = 25
+averages = playerStatistics.groupby(['season', 'personId'])['points'].mean().reset_index()
+averages = averages.groupby('season').apply(lambda x: x.nlargest(topN, 'points')).reset_index(drop = True)
+
+averageTop = averages.groupby('season')['points'].mean()
+
+seasons = averages['season'].unique()
+
+x = np.array(averages['season'])
+y = np.array(averages['points'])
+z = np.array(averageTop)
+v = np.array(seasons)
+
+plt.plot(x, y, '.', color = 'green')
+plt.plot(v, z, '-', color = 'red')
+
+plt.xticks(rotation = 60)
+plt.xlabel('Szezon')
+plt.ylabel('Pontátlag')
+
+plt.show()
